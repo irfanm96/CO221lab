@@ -25,6 +25,8 @@ C=3'b011;
 	 #1 $display("A = %b , B =%b -->  A | B =%b \n",A,B,F);
 	 C=3'b110;
 	 #1 $display("A = %d , B =%d -->  A * B =%d \n",A,B,F);
+	 C =3'b111;
+	#1 $display("A = %b , B =%b -->  A xor B =%b \n",A,B,F);
 	
 end
 endmodule
@@ -52,13 +54,14 @@ wire[3:0] aMb;
 wire[3:0] aAb;
 wire[3:0] aOb;
 wire[3:0] temp;
-wire [7:0] amultb;
+wire [3:0] amultb;
 wire C2OUT;
 wire C3OUT;
 wire B1OUT;
 wire C4OUT ;
 wire [3:0] notA;
 wire [3:0]notB;
+wire [3:0] bitxor;
 
 
 invertor invA(A,notA);
@@ -75,8 +78,7 @@ ripplecadder rca2(notB,1'b1,1'b0,b2s,C2OUT);
 // A+B 
 ripplecadder rca3(A,B,1'b0,aPb,C3OUT);
 
-// A-B  not working
-//ripplecsub rca4(A,B,1'b0,aMb,B1OUT);
+
 
 // A-B
  ripplecadder rca4(~B,1'b1,1'b0,temp,C4OUT);
@@ -95,12 +97,13 @@ bitwiseor bitwsOR(A,B,aOb);
 
 multiplier m(A,B,amultb);
 
+// bitwise xor on A ,B;
+bitwisexor xr(A,B,bitxor);
 
-
-mux8to1 mux0(a2s[0],b2s[0],aPb[0],aMb[0],aAb[0],aOb[0],amultb[0],1'b1,C,F[0]);
-mux8to1 mux1(a2s[1],b2s[1],aPb[1],aMb[1],aAb[1],aOb[1],amultb[1],1'b1,C,F[1]);
-mux8to1 mux2(a2s[2],b2s[2],aPb[2],aMb[2],aAb[2],aOb[2],amultb[2],1'b1,C,F[2]);
-mux8to1 mux3(a2s[3],b2s[3],aPb[3],aMb[3],aAb[3],aOb[3],amultb[3],1'b1,C,F[3]);
+mux8to1 mux0(a2s[0],b2s[0],aPb[0],aMb[0],aAb[0],aOb[0],amultb[0],bitxor[0],C,F[0]);
+mux8to1 mux1(a2s[1],b2s[1],aPb[1],aMb[1],aAb[1],aOb[1],amultb[1],bitxor[1],C,F[1]);
+mux8to1 mux2(a2s[2],b2s[2],aPb[2],aMb[2],aAb[2],aOb[2],amultb[2],bitxor[2],C,F[2]);
+mux8to1 mux3(a2s[3],b2s[3],aPb[3],aMb[3],aAb[3],aOb[3],amultb[3],bitxor[3],C,F[3]);
 
 
 
@@ -239,7 +242,7 @@ endmodule
 module multiplier(a,b,out);
 
 input [3:0] a,b;
-output [7:0] out;
+output [3:0] out;
 
 
 
@@ -311,4 +314,14 @@ not(out[3],a[3]);
 
 endmodule 
 
+module bitwisexor(a,b,out);
 
+input  [3:0] a,b;
+output [3:0] out;
+
+xor(out[0],a[0],b[0]);
+xor(out[1],a[1],b[1]);
+xor(out[2],a[2],b[2]);
+xor(out[3],a[3],b[3]);
+
+endmodule
